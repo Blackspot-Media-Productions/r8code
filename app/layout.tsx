@@ -40,7 +40,7 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <body
-        className={`min-h-full overflow-clip flex flex-col ${dmSans.className}`}
+        className={`min-h-full overflow-x-clip flex flex-col ${dmSans.className}`}
       >
         <noscript>
           <style>{`.pageLoader{display:none!important}`}</style>
