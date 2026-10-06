@@ -13,6 +13,7 @@ const specs = [
         viewBox="0 0 25 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        data-reveal
       >
         <path
           fillRule="evenodd"
@@ -53,14 +54,21 @@ const specs = [
     description:
       "Expertise in machine learning, AI, and biometric authentication.",
     icon: (
-      <UserRoundGroup size={80} className="text-primary" strokeWidth={1.5} />
+      <UserRoundGroup
+        size={80}
+        className="text-primary"
+        strokeWidth={1.5}
+        data-reveal
+      />
     ),
   },
 
   {
     label: "Competitive Pricing",
     description: "High-quality services at transparent, competitive rates.",
-    icon: <Coins size={80} className="text-primary" strokeWidth={1.5} />,
+    icon: (
+      <Coins size={80} className="text-primary" strokeWidth={1.5} data-reveal />
+    ),
   },
 ];
 
@@ -93,10 +101,16 @@ export default function WhyChooseUs() {
             {spec.icon}
 
             <div className="space-y-7 lg:space-y-8.75">
-              <h3 className="font-medium text-white text-[22px] md:text-2xl leading-[130%] md:leading-[145%]">
+              <h3
+                className="font-medium text-white text-[22px] md:text-2xl leading-[130%] md:leading-[145%]"
+                data-reveal
+              >
                 {spec.label}
               </h3>
-              <p className="text-base lg:text-xl text-description leading-[145%]">
+              <p
+                className="text-base lg:text-xl text-description leading-[145%]"
+                data-reveal
+              >
                 {spec.description}
               </p>
             </div>

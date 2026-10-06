@@ -13,6 +13,7 @@ export default function Button({ type = "button", ...props }: Props) {
     <button
       type={type}
       className={`bg-primary text-dark text-xs py-3.5 px-5.5 rounded-full ${props.className} cursor-pointer`}
+      data-reveal
     >
       {props.children}
     </button>

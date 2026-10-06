@@ -40,7 +40,6 @@ export default function ContactUs() {
       <form
         className="shrink-0 max-w-150 w-full space-y-5.5"
         onSubmit={(e) => e.preventDefault()}
-        data-reveal
       >
         <TextField
           label="Your name"

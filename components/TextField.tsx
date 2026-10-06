@@ -18,7 +18,7 @@ export default function TextField({
   ...props
 }: Props) {
   return (
-    <div className="w-full flex flex-col gap-y-3">
+    <div className="w-full flex flex-col gap-y-3" data-reveal>
       <label htmlFor={props.id} className="text-xs font-medium">
         {props.label}&nbsp;
         {required && "*"}

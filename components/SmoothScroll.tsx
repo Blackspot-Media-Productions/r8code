@@ -1,12 +1,19 @@
 "use client";
 
-import { ReactLenis } from "lenis/react";
+import { ReactLenis, useLenis } from "lenis/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import "lenis/dist/lenis.css";
 
 function RevealObserver() {
   const pathname = usePathname();
+  const lenis = useLenis();
+
+  useEffect(() => {
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true });
+    }
+  }, [pathname, lenis]);
 
   useEffect(() => {
     let io: IntersectionObserver | undefined;
@@ -15,8 +22,12 @@ function RevealObserver() {
     const run = () => {
       if (cancelled) return;
 
-      const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const nodes = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-reveal]"),
+      );
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
       const reveal = (el: HTMLElement) => el.classList.add("is-inview");
 
       if (reduced) {
@@ -24,16 +35,20 @@ function RevealObserver() {
         return;
       }
 
+      // 1. Force add js-reveal so the CSS transition styles apply safely
+      document.documentElement.classList.add("js-reveal");
+
+      // 2. Immediately reveal items already visible on top of screen
       const alreadyInView = (el: HTMLElement) => {
         const rect = el.getBoundingClientRect();
-        return rect.top < window.innerHeight * 0.92 && rect.bottom > 40;
+        return rect.top < window.innerHeight * 0.95 && rect.bottom > 10;
       };
 
       nodes.forEach((el) => {
         if (alreadyInView(el)) reveal(el);
       });
-      document.documentElement.classList.add("js-reveal");
 
+      // 3. Track remaining items as they scroll into view
       io = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
@@ -42,7 +57,7 @@ function RevealObserver() {
             io?.unobserve(entry.target);
           }
         },
-        { threshold: 0.14, rootMargin: "0px 0px -8% 0px" },
+        { threshold: 0.05, rootMargin: "0px 0px -5% 0px" },
       );
 
       nodes.forEach((el) => {
@@ -50,15 +65,32 @@ function RevealObserver() {
       });
     };
 
+    // If page-loading class is active, wait for the loader event OR a safety timeout fallback
     if (document.documentElement.classList.contains("page-loading")) {
-      window.addEventListener("pageloader:done", run, { once: true });
+      const handleLoader = () => {
+        window.removeEventListener("pageloader:done", handleLoader);
+        run();
+      };
+      window.addEventListener("pageloader:done", handleLoader, { once: true });
+
+      // Safety timeout: If your loader script doesn't fire 'pageloader:done', fire anyway after 800ms
+      const safetyTimeout = setTimeout(() => {
+        document.documentElement.classList.remove("page-loading");
+        handleLoader();
+      }, 800);
+
+      return () => {
+        cancelled = true;
+        window.removeEventListener("pageloader:done", handleLoader);
+        clearTimeout(safetyTimeout);
+        io?.disconnect();
+      };
     } else {
       run();
     }
 
     return () => {
       cancelled = true;
-      window.removeEventListener("pageloader:done", run);
       io?.disconnect();
     };
   }, [pathname]);
@@ -72,7 +104,9 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   const [smooth, setSmooth] = useState(false);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     setSmooth(!isAdmin && !reduced);
   }, [isAdmin]);
 
@@ -91,8 +125,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     <ReactLenis
       root
       options={{
-        lerp: 0.09,
-        duration: 1.15,
+        duration: 1.15, // Removed conflicting 'lerp: 0.09' to maintain consistent rendering speed
         smoothWheel: true,
         anchors: true,
         autoRaf: true,

@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Script from "next/script";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import BouncingBall from "@/components/BouncingBall";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -61,6 +62,8 @@ export default function RootLayout({
         `}</Script>
 
         <SmoothScroll>
+          <BouncingBall />
+
           <div
             id="top"
             className="max-w-7xl overflow-x-clip xl:overflow-x-visible w-full mx-auto py-5 lg:py-10 px-6 2xl:px-0"
