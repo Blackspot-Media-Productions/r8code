@@ -63,7 +63,7 @@ export default function RootLayout({
         <SmoothScroll>
           <div
             id="top"
-            className="max-w-7xl w-full mx-auto py-5 lg:py-10 px-6 2xl:px-0"
+            className="max-w-7xl overflow-x-clip xl:overflow-x-visible w-full mx-auto py-5 lg:py-10 px-6 2xl:px-0"
           >
             <Navbar />
             {children}
