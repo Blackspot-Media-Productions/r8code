@@ -7,21 +7,21 @@ export default function BouncingBall() {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const ballRef = useRef<HTMLDivElement>(null);
-  const vector = useRef({ dx: 3, dy: 3 });
+  const vector = useRef({ dx: 2, dy: 2 }); // Slightly slower base speed looks cleaner on mobile
   const boundsRef = useRef({ width: 0, height: 0 });
 
   useEffect(() => {
     if (!ballRef.current) return;
 
-    // Safely capture initial layout sizes
     const ballWidth = ballRef.current.offsetWidth;
     const windowWidth = window.innerWidth;
     const totalPageHeight = document.documentElement.scrollHeight;
 
     boundsRef.current = { width: windowWidth, height: totalPageHeight };
 
-    // FIX 1: Offset by half the ball's width so it spawns perfectly centered
-    x.set(windowWidth / 2 - ballWidth / 2);
+    // Set initial position safely (if ball is wider than screen, force it to 0)
+    const initialX = Math.max(0, windowWidth / 2 - ballWidth / 2);
+    x.set(initialX);
     y.set(40);
 
     const updateBounds = () => {
@@ -46,31 +46,31 @@ export default function BouncingBall() {
     let { dx, dy } = vector.current;
 
     const { width: windowWidth, height: totalPageHeight } = boundsRef.current;
-
-    // Prevent loop execution before bounds are set by useEffect
     if (windowWidth === 0) return;
 
-    // Calculate next positions
     let nextX = currentX + dx;
     let nextY = currentY + dy;
 
-    // FIX 2: Check boundaries against the NEXT frame position and clamp them
+    // FIX: Fallback to 0 if the ball width exceeds the available viewport width
+    const rightWallLimit = Math.max(0, windowWidth - ballWidth);
+    const bottomWallLimit = Math.max(0, totalPageHeight - ballHeight);
+
     // Bounce off Left / Right walls
-    if (nextX > windowWidth - ballWidth) {
+    if (nextX > rightWallLimit) {
       dx = -Math.abs(dx);
-      nextX = windowWidth - ballWidth; // Clamp to wall
+      nextX = rightWallLimit;
     } else if (nextX < 0) {
       dx = Math.abs(dx);
-      nextX = 0; // Clamp to wall
+      nextX = 0;
     }
 
-    // Bounce off Top / Bottom document edges
-    if (nextY > totalPageHeight - ballHeight) {
+    // Bounce off Top / Bottom edges
+    if (nextY > bottomWallLimit) {
       dy = -Math.abs(dy);
-      nextY = totalPageHeight - ballHeight; // Clamp to wall
+      nextY = bottomWallLimit;
     } else if (nextY < 0) {
       dy = Math.abs(dy);
-      nextY = 0; // Clamp to wall
+      nextY = 0;
     }
 
     vector.current = { dx, dy };
