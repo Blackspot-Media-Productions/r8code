@@ -4,6 +4,7 @@ import Image from "next/image";
 import Logo from "@/public/img/logo.png";
 import Link from "next/link";
 import Button from "./Button";
+import { useRouter } from "next/navigation";
 
 const navlinks = [
   {
@@ -21,6 +22,8 @@ const navlinks = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
+
   return (
     <nav className="w-full bg-light px-4 md:px-10 py-4.5 rounded-[10px] flex flex-col items-center gap-y-5">
       <div className="w-full flex items-center justify-between">
@@ -45,19 +48,9 @@ export default function Navbar() {
           ))}
         </div>
 
-        <Button className="font-inter">Start a project</Button>
-      </div>
-
-      <div className="flex lg:hidden text-dark font-inter items-center gap-x-10">
-        {navlinks.map((link) => (
-          <Link
-            key={link.label.toLowerCase()}
-            href={link.route}
-            className="text-sm"
-          >
-            {link.label}
-          </Link>
-        ))}
+        <Button action={() => router.push("#contact")} className="font-inter">
+          Start a project
+        </Button>
       </div>
     </nav>
   );
